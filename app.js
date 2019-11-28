@@ -3,11 +3,11 @@
   var current_location_json;
   var app = document.querySelector("#app");
 
-  // Call the API
+  // Call the location API
   fetch("https://ipapi.co/json")
     .then(function(response) {
       if (response.ok) {
-        return response.json();
+        return response.json();      
       } else {
         return Promise.reject(response);
       }
@@ -20,7 +20,7 @@
 
       // Fetch another API
       return fetch(
-        "https://api.weatherbit.io/v2.0/current?city=" + data.city + "," + data.region_code + "&key=" + weather_api_key
+        "https://api.weatherbit.io/v2.0/current?lat=" + data.latitude + "&lon=" + data.longitude + "&key=" + weather_api_key
       );
     })
     .then(function(response) {
@@ -32,7 +32,7 @@
     })
     .then(function(weather) {
       console.log(weather);
-      displayWeather(weather);
+      displayWeather(weather.data[0]);
     })
     .catch(function(error) {
       console.warn(error);
@@ -40,7 +40,7 @@
     });
 
     function displayError() {
-        app.innerHTML = "<p>Sorry, something went wrong. Please try again later.</p>";
+        app.innerHTML = "<p>Sorry, unable to get weather at this time. Please try again later.</p>";
     }
 
     function displayLocation(data) {
@@ -55,8 +55,8 @@
 
     function displayWeather(data) {
 
-        var weather_data = data.data[0];
-
-        app.innerHTML += `<div>The air temperature: ${weather_data.app_temp} Celcius</div>`;
+        app.innerHTML += `
+        <p><img src="https://www.weatherbit.io/static/img/icons/${data.weather.icon}.png"></p>
+        <p>It is currently ${data.app_temp} degrees Celcius and ${data.weather.description.toLowerCase()}.</p>`;
     }
 })();
