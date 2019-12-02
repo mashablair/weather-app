@@ -1,6 +1,7 @@
 var weatherApp = function(options) {
   // Default Settings
   var settings = {
+    container: "#weather_app",
     fahrenheit: false
   };
 
@@ -8,7 +9,7 @@ var weatherApp = function(options) {
   var settings = Object.assign(settings, options);
 
   var weather_api_key = "ee99bb35b27c489fa8f5c68553c56aef";
-  var app = document.querySelector("#app");
+  var app = document.querySelector(settings.container);
 
   // Call the location API
   fetch("https://ipapi.co/json")
@@ -88,4 +89,4 @@ var weatherApp = function(options) {
   };
 };
 
-weatherApp({ fahrenheit: true });
+weatherApp({ fahrenheit: false });
