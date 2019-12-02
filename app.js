@@ -1,6 +1,13 @@
-(function() {
+var weatherApp = function(options) {
+  // Default Settings
+  var settings = {
+    fahrenheit: false
+  };
+
+  // Merge any user options into the defaults
+  var settings = Object.assign(settings, options);
+
   var weather_api_key = "ee99bb35b27c489fa8f5c68553c56aef";
-  var current_location_json;
   var app = document.querySelector("#app");
 
   // Call the location API
@@ -13,20 +20,10 @@
       }
     })
     .then(function(data) {
-      // Store the post data to a variable
-      current_location_json = data;
-
       displayLocation(data);
 
       // Fetch another API
-      return fetch(
-        "https://api.weatherbit.io/v2.0/current?lat=" +
-          data.latitude +
-          "&lon=" +
-          data.longitude +
-          "&key=" +
-          weather_api_key
-      );
+      return fetch("https://api.weatherbit.io/v2.0/current?lat=" + data.latitude + "&lon=" + data.longitude + "&key=" + weather_api_key);
     })
     .then(function(response) {
       if (response.ok) {
@@ -45,8 +42,7 @@
     });
 
   function displayError() {
-    app.innerHTML =
-      "<p>Sorry, unable to get weather at this time. Please try again later.</p>";
+    app.innerHTML = "<p>Sorry, unable to get weather at this time. Please try again later.</p>";
   }
 
   function displayLocation(data) {
@@ -59,15 +55,15 @@
   }
 
   function displayWeather(data) {
+    var temperature;
+    if (settings.fahrenheit) {
+      temperature = fToC(sanitizeHTML(data.app_temp)) + " degrees Fahrenheit";
+    } else {
+      temperature = sanitizeHTML(data.app_temp) + " degrees Celcius";
+    }
     app.innerHTML += `
-        <p><img src="https://www.weatherbit.io/static/img/icons/${sanitizeHTML(
-          data.weather.icon
-        )}.png"></p>
-        <p>It is currently ${sanitizeHTML(
-          data.app_temp
-        )} degrees Celcius and ${sanitizeHTML(
-      data.weather.description
-    ).toLowerCase()}.</p>`;
+        <p><img src="https://www.weatherbit.io/static/img/icons/${sanitizeHTML(data.weather.icon)}.png"></p>
+        <p>It is currently ${temperature} and ${sanitizeHTML(data.weather.description).toLowerCase()}.</p>`;
   }
 
   /*!
@@ -90,4 +86,6 @@
   var fToC = function(temp) {
     return (parseFloat(temp) * 9) / 5 + 32;
   };
-})();
+};
+
+weatherApp({ fahrenheit: true });
