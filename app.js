@@ -1,6 +1,7 @@
 var weatherApp = function(options) {
   // Default Settings
   var settings = {
+    api_key: null, // the only required field
     container: "#weather_app",
     fahrenheit: false
   };
@@ -8,8 +9,14 @@ var weatherApp = function(options) {
   // Merge any user options into the defaults
   var settings = Object.assign(settings, options);
 
-  var weather_api_key = "ee99bb35b27c489fa8f5c68553c56aef";
+  // get container
   var app = document.querySelector(settings.container);
+
+  // Don't run if no API key was provided
+  if (!settings.api_key) {
+    console.warn("Please provide an API key");
+    return;
+  }
 
   // Call the location API
   fetch("https://ipapi.co/json")
@@ -24,7 +31,7 @@ var weatherApp = function(options) {
       displayLocation(data);
 
       // Fetch another API
-      return fetch("https://api.weatherbit.io/v2.0/current?lat=" + data.latitude + "&lon=" + data.longitude + "&key=" + weather_api_key);
+      return fetch("https://api.weatherbit.io/v2.0/current?lat=" + data.latitude + "&lon=" + data.longitude + "&key=" + settings.api_key);
     })
     .then(function(response) {
       if (response.ok) {
@@ -67,7 +74,7 @@ var weatherApp = function(options) {
         <p>It is currently ${temperature} and ${sanitizeHTML(data.weather.description).toLowerCase()}.</p>`;
   }
 
-  /*!
+  /**
    * Sanitize and encode all HTML in a user-submitted string
    * (c) 2018 Chris Ferdinandi, MIT License, https://gomakethings.com
    * @param  {String} str  The user-submitted string
@@ -89,4 +96,6 @@ var weatherApp = function(options) {
   };
 };
 
-weatherApp({ fahrenheit: false });
+// Initializing the app w/ default settings
+weatherApp({ api_key: "ee99bb35b27c489fa8f5c68553c56aef" });
+// weatherApp();
