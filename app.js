@@ -3,7 +3,8 @@ var weatherApp = function(options) {
   var settings = {
     api_key: null, // the only required field
     container: "#weather_app",
-    fahrenheit: false
+    fahrenheit: false,
+    description: "It is currently {{temp}} and {{conditions}} in {{city}}, {{state}}."
   };
 
   // Merge any user options into the defaults
@@ -12,7 +13,7 @@ var weatherApp = function(options) {
   // get container
   var app = document.querySelector(settings.container);
 
-  // Don't run if no API key was provided
+  // If no API key was provided, bail
   if (!settings.api_key) {
     console.warn("Please provide an API key");
     return;
@@ -53,6 +54,10 @@ var weatherApp = function(options) {
     app.innerHTML = "<p>Sorry, unable to get weather at this time. Please try again later.</p>";
   }
 
+  /**
+   * Displays heading with location of weather report
+   * @param  {Object} data The weather object
+   */
   function displayLocation(data) {
     if (!data.city || !data.region_code) {
       displayError();
@@ -62,16 +67,27 @@ var weatherApp = function(options) {
     app.innerHTML = `<h2>Today in ${data.city}, ${data.region_code}:</h2>`;
   }
 
+  /**
+   * Get the description for the current weather conditions
+   * @param  {Object} data The weather object
+   * @return {String}         A markup string for the weather description
+   */
+  function getDescription(data) {
+    return settings.description
+      .replace("{{temp}}", fToC(data.temp))
+      .replace("{{conditions}}", sanitizeHTML(data.weather.description).toLowerCase())
+      .replace("{{city}}", sanitizeHTML(data.city_name))
+      .replace("{{state}}", sanitizeHTML(data.state_code));
+  }
+
+  /**
+   * Displays icon and weather based on user's choice (or default)
+   * @param  {Object} data The weather object
+   */
   function displayWeather(data) {
-    var temperature;
-    if (settings.fahrenheit) {
-      temperature = fToC(sanitizeHTML(data.app_temp)) + " degrees Fahrenheit";
-    } else {
-      temperature = sanitizeHTML(data.app_temp) + " degrees Celcius";
-    }
     app.innerHTML += `
         <p><img src="https://www.weatherbit.io/static/img/icons/${sanitizeHTML(data.weather.icon)}.png"></p>
-        <p>It is currently ${temperature} and ${sanitizeHTML(data.weather.description).toLowerCase()}.</p>`;
+        <p>${getDescription(data)}</p>`;
   }
 
   /**
@@ -92,7 +108,14 @@ var weatherApp = function(options) {
    * @return {Number}      The temperature in fahrenheit
    */
   var fToC = function(temp) {
-    return (parseFloat(temp) * 9) / 5 + 32;
+    var temperature;
+    if (settings.fahrenheit) {
+      temperature = (parseFloat(sanitizeHTML(temp)) * 9) / 5 + 32 + " degrees Fahrenheit";
+    } else {
+      temperature = sanitizeHTML(temp) + " degrees Celcius";
+    }
+
+    return temperature;
   };
 };
 
