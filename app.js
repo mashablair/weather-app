@@ -4,7 +4,8 @@ var weatherApp = function(options) {
     api_key: null, // the only required field
     container: "#weather_app",
     fahrenheit: false,
-    description: "It is currently {{temp}} and {{conditions}} in {{city}}, {{state}}."
+    description: "It is currently {{temp}} and {{conditions}} in {{city}}, {{state}}.",
+    error: "Sorry, unable to get weather at this time. Please try again later."
   };
 
   // Merge any user options into the defaults
@@ -51,7 +52,7 @@ var weatherApp = function(options) {
     });
 
   function displayError() {
-    app.innerHTML = "<p>Sorry, unable to get weather at this time. Please try again later.</p>";
+    app.innerHTML = `<p>${settings.error}</p>`;
   }
 
   /**

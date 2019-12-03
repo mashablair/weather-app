@@ -34,8 +34,18 @@ By default, weather is displayed in this format:
 ```
 "It is currently {{temp}} and {{conditions}} in {{city}}, {{state}}."
 ```
-To display a different sentence, user can use another string with any of these variables: {{temp}}, {{conditions}}, {{city}}, {{state}}.  
+To display a different sentence, user can use another string with any of these variables: {{temp}}, {{conditions}}, {{city}}, {{state}}. 
 
+## Custom error message
+By default, the error is diplayed:
+```
+Sorry, unable to get weather at this time. Please try again later.
+```
+
+To change the error message, pass the custom one like this: 
+```
+weatherApp({ error: "Your custom error message here." });
+```
 
 Project 8 of [Vanilla JS Academy](https://vanillajsacademy.com/)
 
